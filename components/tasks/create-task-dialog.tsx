@@ -28,12 +28,12 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { taskSchema } from "@/lib/schemas/task"
+import { createTask } from "@/lib/services/tasks"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
-import { createTask } from "@/lib/services/tasks"
 import { toast } from "sonner"
 import { useTasks } from "@/lib/context/tasks-context"
 import { UserSelect } from "@/components/tasks/user-select"
@@ -58,11 +58,7 @@ export function CreateTaskDialog() {
   async function onSubmit(data: TaskFormValues) {
     try {
       setLoading(true)
-      const formData = {
-        ...data,
-        assigned_to: data.assigned_to || undefined,
-      }
-      await createTask(formData)
+      await createTask(data)
       setOpen(false)
       form.reset()
       await refreshTasks()

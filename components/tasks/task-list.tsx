@@ -9,8 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { deleteTask } from "@/lib/services/tasks"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Trash2 } from "lucide-react"
 import {
@@ -27,6 +26,7 @@ import {
 import { toast } from "sonner"
 import { useTasks } from "@/lib/context/tasks-context"
 import { EditTaskDialog } from "@/components/tasks/edit-task-dialog"
+import { deleteTask } from "@/lib/services/tasks"
 
 type Task = {
   id: string
@@ -39,23 +39,19 @@ type Task = {
 
 export function TaskList() {
   const { tasks, loading, refreshTasks } = useTasks()
-  const [deleting, setDeleting] = useState<string | null>(null)
 
   useEffect(() => {
     refreshTasks()
   }, [refreshTasks])
 
-  const handleDelete = async (id: string) => {
+  async function handleDelete(id: string) {
     try {
-      setDeleting(id)
       await deleteTask(id)
-      refreshTasks()
+      await refreshTasks()
       toast.success("Task deleted successfully")
     } catch (error) {
       console.error("Error deleting task:", error)
       toast.error("Failed to delete task")
-    } finally {
-      setDeleting(null)
     }
   }
 
@@ -102,7 +98,6 @@ export function TaskList() {
                       <Button 
                         variant="ghost" 
                         size="sm"
-                        disabled={deleting === task.id}
                       >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>

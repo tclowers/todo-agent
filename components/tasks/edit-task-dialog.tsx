@@ -33,10 +33,10 @@ import { Pencil } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
-import { updateTask } from "@/lib/services/tasks"
 import { toast } from "sonner"
 import { useTasks } from "@/lib/context/tasks-context"
 import { UserSelect } from "@/components/tasks/user-select"
+import { updateTask } from "@/lib/services/tasks"
 
 type TaskFormValues = z.infer<typeof taskSchema>
 
@@ -68,11 +68,7 @@ export function EditTaskDialog({ task }: EditTaskDialogProps) {
   async function onSubmit(data: TaskFormValues) {
     try {
       setLoading(true)
-      const formData = {
-        ...data,
-        assigned_to: data.assigned_to || undefined,
-      }
-      await updateTask(task.id, formData)
+      await updateTask(task.id, data)
       setOpen(false)
       await refreshTasks()
       toast.success("Task updated successfully")

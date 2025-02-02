@@ -1,56 +1,40 @@
-import { supabase } from "@/lib/supabase/client"
 import type { TaskFormValues } from "@/lib/schemas/task"
+import type { Task } from "@/lib/schemas/task"
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || ''
 
 export async function createTask(task: TaskFormValues) {
-  const { data, error } = await supabase
-    .from("tasks")
-    .insert([
-      {
-        title: task.title,
-        description: task.description,
-        status: task.status,
-        assigned_to: task.assigned_to,
-      },
-    ])
-    .select()
-    .single()
-
-  if (error) throw error
-  return data
+  const response = await fetch(`${API_BASE}/api/tasks`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(task),
+  })
+  
+  if (!response.ok) throw new Error("Failed to create task")
+  return response.json()
 }
 
-export async function getTasks() {
-  const { data, error } = await supabase
-    .from("tasks")
-    .select("*")
-    .order("created_at", { ascending: false })
-
-  if (error) throw error
-  return data
-}
-
-export async function deleteTask(id: string) {
-  const { error } = await supabase
-    .from("tasks")
-    .delete()
-    .eq("id", id)
-
-  if (error) throw error
+export async function getTasks(): Promise<Task[]> {
+  const response = await fetch(`${API_BASE}/api/tasks`)
+  if (!response.ok) throw new Error("Failed to get tasks")
+  return response.json()
 }
 
 export async function updateTask(id: string, task: TaskFormValues) {
-  const { data, error } = await supabase
-    .from("tasks")
-    .update({
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      assigned_to: task.assigned_to,
-    })
-    .eq("id", id)
-    .select()
-    .single()
+  const response = await fetch(`${API_BASE}/api/tasks/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(task),
+  })
+  
+  if (!response.ok) throw new Error("Failed to update task")
+  return response.json()
+}
 
-  if (error) throw error
-  return data
+export async function deleteTask(id: string) {
+  const response = await fetch(`${API_BASE}/api/tasks/${id}`, {
+    method: "DELETE",
+  })
+  
+  if (!response.ok) throw new Error("Failed to delete task")
 } 

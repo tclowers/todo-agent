@@ -7,13 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useEffect, useState } from "react"
-import { getUsers } from "@/lib/services/users"
-
-type User = {
-  id: string
-  full_name: string
-}
+import { useUsers } from "@/lib/context/users-context"
 
 type UserSelectProps = {
   value?: string
@@ -21,23 +15,7 @@ type UserSelectProps = {
 }
 
 export function UserSelect({ value, onValueChange }: UserSelectProps) {
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function loadUsers() {
-      try {
-        const data = await getUsers()
-        setUsers(data)
-      } catch (error) {
-        console.error("Error loading users:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadUsers()
-  }, [])
+  const { users, loading } = useUsers()
 
   if (loading) {
     return (
