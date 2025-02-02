@@ -27,4 +27,30 @@ export async function getTasks() {
 
   if (error) throw error
   return data
+}
+
+export async function deleteTask(id: string) {
+  const { error } = await supabase
+    .from("tasks")
+    .delete()
+    .eq("id", id)
+
+  if (error) throw error
+}
+
+export async function updateTask(id: string, task: TaskFormValues) {
+  const { data, error } = await supabase
+    .from("tasks")
+    .update({
+      title: task.title,
+      description: task.description,
+      status: task.status,
+      assigned_to: task.assigned_to,
+    })
+    .eq("id", id)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
 } 

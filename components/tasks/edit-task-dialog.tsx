@@ -29,18 +29,28 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { taskSchema } from "@/lib/schemas/task"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Plus } from "lucide-react"
+import { Pencil } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
-import { createTask } from "@/lib/services/tasks"
+import { updateTask } from "@/lib/services/tasks"
 import { toast } from "sonner"
 import { useTasks } from "@/lib/context/tasks-context"
 import { UserSelect } from "@/components/tasks/user-select"
 
 type TaskFormValues = z.infer<typeof taskSchema>
 
-export function CreateTaskDialog() {
+type EditTaskDialogProps = {
+  task: {
+    id: string
+    title: string
+    description: string | null
+    status: string
+    assigned_to: string | null
+  }
+}
+
+export function EditTaskDialog({ task }: EditTaskDialogProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const { refreshTasks } = useTasks()
@@ -48,10 +58,10 @@ export function CreateTaskDialog() {
   const form = useForm<TaskFormValues>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      status: "pending",
-      assigned_to: undefined,
+      title: task.title,
+      description: task.description || "",
+      status: task.status as "pending" | "in_progress" | "completed",
+      assigned_to: task.assigned_to || undefined,
     },
   })
 
@@ -62,14 +72,13 @@ export function CreateTaskDialog() {
         ...data,
         assigned_to: data.assigned_to || undefined,
       }
-      await createTask(formData)
+      await updateTask(task.id, formData)
       setOpen(false)
-      form.reset()
       await refreshTasks()
-      toast.success("Task created successfully")
+      toast.success("Task updated successfully")
     } catch (error) {
-      console.error("Error creating task:", error)
-      toast.error("Failed to create task")
+      console.error("Error updating task:", error)
+      toast.error("Failed to update task")
     } finally {
       setLoading(false)
     }
@@ -78,16 +87,15 @@ export function CreateTaskDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Task
+        <Button variant="ghost" size="sm">
+          <Pencil className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create Task</DialogTitle>
+          <DialogTitle>Edit Task</DialogTitle>
           <DialogDescription>
-            Add a new task to your list.
+            Make changes to your task here.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -165,7 +173,7 @@ export function CreateTaskDialog() {
             />
             <DialogFooter>
               <Button type="submit" disabled={loading}>
-                {loading ? "Creating..." : "Create Task"}
+                {loading ? "Saving..." : "Save Changes"}
               </Button>
             </DialogFooter>
           </form>
@@ -173,4 +181,4 @@ export function CreateTaskDialog() {
       </DialogContent>
     </Dialog>
   )
-}
+} 

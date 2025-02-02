@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Table,
   TableBody,
@@ -7,7 +9,60 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { deleteTask } from "@/lib/services/tasks"
+import { useEffect, useState } from "react"
+import { Badge } from "@/components/ui/badge"
+import { Trash2 } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
+import { useTasks } from "@/lib/context/tasks-context"
+import { EditTaskDialog } from "@/components/tasks/edit-task-dialog"
+
+type Task = {
+  id: string
+  title: string
+  description: string | null
+  status: string
+  assigned_to: string | null
+  created_at: string
+}
+
 export function TaskList() {
+  const { tasks, loading, refreshTasks } = useTasks()
+  const [deleting, setDeleting] = useState<string | null>(null)
+
+  useEffect(() => {
+    refreshTasks()
+  }, [refreshTasks])
+
+  const handleDelete = async (id: string) => {
+    try {
+      setDeleting(id)
+      await deleteTask(id)
+      refreshTasks()
+      toast.success("Task deleted successfully")
+    } catch (error) {
+      console.error("Error deleting task:", error)
+      toast.error("Failed to delete task")
+    } finally {
+      setDeleting(null)
+    }
+  }
+
+  if (loading) {
+    return <div>Loading tasks...</div>
+  }
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -21,19 +76,78 @@ export function TaskList() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell className="font-medium">Example Task</TableCell>
-            <TableCell>Pending</TableCell>
-            <TableCell>Unassigned</TableCell>
-            <TableCell>{new Date().toLocaleDateString()}</TableCell>
-            <TableCell className="text-right">
-              <Button variant="ghost" size="sm">
-                Edit
-              </Button>
-            </TableCell>
-          </TableRow>
+          {tasks.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={5} className="text-center text-muted-foreground">
+                No tasks found
+              </TableCell>
+            </TableRow>
+          ) : (
+            tasks.map((task) => (
+              <TableRow key={task.id}>
+                <TableCell className="font-medium">{task.title}</TableCell>
+                <TableCell>
+                  <Badge variant={getStatusVariant(task.status)}>
+                    {formatStatus(task.status)}
+                  </Badge>
+                </TableCell>
+                <TableCell>{task.assigned_to || "Unassigned"}</TableCell>
+                <TableCell>
+                  {new Date(task.created_at).toLocaleDateString()}
+                </TableCell>
+                <TableCell className="text-right space-x-2">
+                  <EditTaskDialog task={task} />
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        disabled={deleting === task.id}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Task</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete this task? This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDelete(task.id)}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>
   )
+}
+
+function getStatusVariant(status: string) {
+  switch (status) {
+    case "completed":
+      return "success"
+    case "in_progress":
+      return "warning"
+    default:
+      return "secondary"
+  }
+}
+
+function formatStatus(status: string) {
+  return status.split("_").map(word => 
+    word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(" ")
 } 
