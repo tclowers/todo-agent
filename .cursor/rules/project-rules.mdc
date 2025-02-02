@@ -1,0 +1,10 @@
+---
+description: Creating shadcn components
+globs: 
+---
+
+# Your rule content
+To add new shadcn components, be sure to use this command:
+```bash
+npx shadcn@latest add component_name
+```
