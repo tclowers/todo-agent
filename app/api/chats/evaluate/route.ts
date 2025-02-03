@@ -1,6 +1,8 @@
 import { getChatsFromDb, updateChatInDb } from "@/lib/services/db/chats"
 import { getMessagesForChat } from "@/lib/services/db/messages"
-import { evaluateChatCompletion } from "@/lib/services/openai"
+import { evaluateChatCompletion, extractTasksFromChat } from "@/lib/services/openai"
+import { createTaskInDb } from "@/lib/services/db/tasks"
+import { COMPLETION_AGENT_USER_ID } from "@/lib/constants"
 import { NextResponse } from "next/server"
 
 export async function POST() {
@@ -26,9 +28,31 @@ export async function POST() {
       // Get evaluation from OpenAI
       const evaluation = await evaluateChatCompletion(formattedMessages)
 
-      // Update chat if completed
+      // If chat is complete, extract and create tasks
       if (evaluation.completed) {
-        await updateChatInDb(chat.id, true)
+        try {
+          // Extract tasks from the conversation
+          const tasks = await extractTasksFromChat(formattedMessages)
+
+          // Create tasks in database if tasks array exists
+          if (Array.isArray(tasks)) {
+            for (const task of tasks) {
+              await createTaskInDb({
+                title: task.title,
+                description: task.description,
+                status: "pending",
+                assigned_to: COMPLETION_AGENT_USER_ID
+              })
+            }
+          }
+
+          // Update chat as completed
+          await updateChatInDb(chat.id, true)
+        } catch (error) {
+          console.error("Error processing tasks for chat:", chat.id, error)
+          // Continue with other chats even if one fails
+          continue
+        }
       }
     }
 

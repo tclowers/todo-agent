@@ -16,15 +16,21 @@ import type { Chat } from "@/lib/services/db/chats"
 import { useUsers } from "@/lib/context/users-context"
 import Link from "next/link"
 import { toast } from "sonner"
+import { Loader2 } from "lucide-react"
 
 export function ChatHistoryList() {
   const [chats, setChats] = useState<Chat[]>([])
   const [loading, setLoading] = useState(true)
+  const [evaluating, setEvaluating] = useState(false)
   const { users } = useUsers()
 
   useEffect(() => {
     loadChats()
   }, [])
+
+  useEffect(() => {
+    console.log('Evaluating state changed:', evaluating)
+  }, [evaluating])
 
   async function loadChats() {
     try {
@@ -39,13 +45,18 @@ export function ChatHistoryList() {
   }
 
   async function handleEvaluateChats() {
+    console.log('Starting evaluation...')
     try {
+      setEvaluating(true)
       await evaluateChats()
-      await loadChats() // Reload the chats after evaluation
+      console.log('Evaluation API call completed')
+      await loadChats()
       toast.success("Chats evaluated successfully")
     } catch (error) {
       console.error("Error evaluating chats:", error)
       toast.error("Failed to evaluate chats")
+    } finally {
+      setEvaluating(false)
     }
   }
 
@@ -61,8 +72,15 @@ export function ChatHistoryList() {
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <Button onClick={handleEvaluateChats}>
-          Evaluate Chats
+        <Button onClick={handleEvaluateChats} disabled={evaluating}>
+          {evaluating ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Evaluating...
+            </>
+          ) : (
+            "Evaluate Chats"
+          )}
         </Button>
       </div>
       <div className="rounded-md border">
