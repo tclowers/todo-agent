@@ -28,6 +28,17 @@ export default function Home() {
             </CardContent>
           </Card>
         </Link>
+        <Link href="/customers">
+          <Card className="hover:bg-muted/50 transition-colors">
+            <CardHeader>
+              <CardTitle>Customers</CardTitle>
+              <CardDescription>Manage customers</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>View all customers</p>
+            </CardContent>
+          </Card>
+        </Link>
         <Link href="/chat">
           <Card className="hover:bg-muted/50 transition-colors">
             <CardHeader>
