@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback } from "react"
+import { createContext, useContext, useState, useCallback, useEffect } from "react"
 import type { ReactNode } from "react"
 import { getUsers } from "@/lib/services/users"
 import type { User } from "@/lib/services/users"
@@ -28,6 +28,10 @@ export function UsersProvider({ children }: { children: ReactNode }) {
       setLoading(false)
     }
   }, [])
+
+  useEffect(() => {
+    refreshUsers()
+  }, [refreshUsers])
 
   return (
     <UsersContext.Provider value={{ users, loading, refreshUsers }}>

@@ -27,6 +27,7 @@ import { toast } from "sonner"
 import { useTasks } from "@/lib/context/tasks-context"
 import { EditTaskDialog } from "@/components/tasks/edit-task-dialog"
 import { deleteTask } from "@/lib/services/tasks"
+import { useUsers } from "@/lib/context/users-context"
 
 type Task = {
   id: string
@@ -39,6 +40,7 @@ type Task = {
 
 export function TaskList() {
   const { tasks, loading, refreshTasks } = useTasks()
+  const { users } = useUsers()
 
   useEffect(() => {
     refreshTasks()
@@ -53,6 +55,12 @@ export function TaskList() {
       console.error("Error deleting task:", error)
       toast.error("Failed to delete task")
     }
+  }
+
+  function getUserName(userId: string | null) {
+    if (!userId) return "Unassigned"
+    const user = users.find(user => user.id === userId)
+    return user ? user.full_name : "Unknown User"
   }
 
   if (loading) {
@@ -87,7 +95,7 @@ export function TaskList() {
                     {formatStatus(task.status)}
                   </Badge>
                 </TableCell>
-                <TableCell>{task.assigned_to || "Unassigned"}</TableCell>
+                <TableCell>{getUserName(task.assigned_to)}</TableCell>
                 <TableCell>
                   {new Date(task.created_at).toLocaleDateString()}
                 </TableCell>

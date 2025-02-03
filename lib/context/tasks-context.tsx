@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useCallback } from "react"
 import type { ReactNode } from "react"
 import { getTasks } from "@/lib/services/tasks"
 import type { Task } from "@/lib/schemas/task"
+import { useUsers } from "@/lib/context/users-context"
 
 type TasksContextType = {
   tasks: Task[]
@@ -16,6 +17,7 @@ const TasksContext = createContext<TasksContextType | undefined>(undefined)
 export function TasksProvider({ children }: { children: ReactNode }) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
+  const { loading: usersLoading } = useUsers()
 
   const refreshTasks = useCallback(async () => {
     try {
@@ -28,6 +30,10 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       setLoading(false)
     }
   }, [])
+
+  if (usersLoading) {
+    return <div className="text-center py-4">Loading...</div>
+  }
 
   return (
     <TasksContext.Provider value={{ tasks, loading, refreshTasks }}>

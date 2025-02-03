@@ -7,6 +7,7 @@ export type User = {
   full_name: string
   email: string
   created_at: string
+  user_type: "human" | "AI"
 }
 
 export async function createUser(user: UserFormValues) {

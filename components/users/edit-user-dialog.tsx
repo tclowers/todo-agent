@@ -19,20 +19,31 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { userSchema } from "@/lib/schemas/user"
-import { createUser } from "@/lib/services/users"
+import { updateUser } from "@/lib/services/users"
+import type { User } from "@/lib/services/users"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Plus } from "lucide-react"
+import { Pencil } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
 import { toast } from "sonner"
 import { useUsers } from "@/lib/context/users-context"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 type UserFormValues = z.infer<typeof userSchema>
 
-export function CreateUserDialog() {
+type EditUserDialogProps = {
+  user: User
+}
+
+export function EditUserDialog({ user }: EditUserDialogProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const { refreshUsers } = useUsers()
@@ -40,22 +51,23 @@ export function CreateUserDialog() {
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userSchema),
     defaultValues: {
-      full_name: "",
-      email: "",
+      full_name: user.full_name,
+      email: user.email,
+      user_type: user.user_type,
     },
   })
 
   async function onSubmit(data: UserFormValues) {
     try {
       setLoading(true)
-      await createUser(data)
+      await updateUser(user.id, data)
       setOpen(false)
       form.reset()
       await refreshUsers()
-      toast.success("User created successfully")
+      toast.success("User updated successfully")
     } catch (error) {
-      console.error("Error creating user:", error)
-      toast.error("Failed to create user")
+      console.error("Error updating user:", error)
+      toast.error("Failed to update user")
     } finally {
       setLoading(false)
     }
@@ -64,16 +76,15 @@ export function CreateUserDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add User
+        <Button variant="ghost" size="icon">
+          <Pencil className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create User</DialogTitle>
+          <DialogTitle>Edit User</DialogTitle>
           <DialogDescription>
-            Add a new user to the system.
+            Update user information.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -105,31 +116,31 @@ export function CreateUserDialog() {
               )}
             />
             <FormField
-                control={form.control}
-                name="user_type"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>User Type</FormLabel>
-                    <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        defaultValue="human"
-                    >
-                        <SelectTrigger>
-                        <SelectValue placeholder="Select user type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                        <SelectItem value="human">Human</SelectItem>
-                        <SelectItem value="AI">AI</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                    </FormItem>
-                )}
+              control={form.control}
+              name="user_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>User Type</FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    defaultValue="human"
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select user type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="human">Human</SelectItem>
+                      <SelectItem value="AI">AI</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
             <DialogFooter>
               <Button type="submit" disabled={loading}>
-                {loading ? "Creating..." : "Create User"}
+                {loading ? "Saving..." : "Save Changes"}
               </Button>
             </DialogFooter>
           </form>
