@@ -88,16 +88,13 @@ export function TaskList() {
                 </TableCell>
                 <TableCell>{getUserName(task.assigned_to)}</TableCell>
                 <TableCell>
-                  {new Date(task.created_at).toLocaleDateString()}
+                  {new Date(task.created_at).toLocaleString()}
                 </TableCell>
                 <TableCell className="text-right space-x-2">
                   <EditTaskDialog task={task} />
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                      >
+                      <Button variant="ghost">
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </AlertDialogTrigger>
