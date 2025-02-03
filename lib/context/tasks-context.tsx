@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useCallback } from "react"
 import type { ReactNode } from "react"
 import { getTasks } from "@/lib/services/tasks"
-import type { Task } from "@/lib/schemas/task"
+import type { Task } from "@/lib/services/tasks"
 import { useUsers } from "@/lib/context/users-context"
 
 type TasksContextType = {

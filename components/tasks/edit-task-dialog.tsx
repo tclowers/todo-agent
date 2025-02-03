@@ -175,7 +175,7 @@ export function EditTaskDialog({ task }: EditTaskDialogProps) {
                 </Button>
               </DialogFooter>
             </form>
-            <TaskComments taskId={task.id} comments={[]} />
+            <TaskComments taskId={task.id} />
           </Form>
         </div>
       </DialogContent>

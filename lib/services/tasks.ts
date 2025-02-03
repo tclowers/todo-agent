@@ -1,7 +1,15 @@
 import type { TaskFormValues } from "@/lib/schemas/task"
-import type { Task } from "@/lib/schemas/task"
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || ''
+
+export type Task = {
+  id: string
+  title: string
+  description: string | null
+  status: "pending" | "in_progress" | "completed"
+  assigned_to: string | null
+  created_at: string
+}
 
 export async function createTask(task: TaskFormValues) {
   const response = await fetch(`${API_BASE}/api/tasks`, {

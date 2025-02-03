@@ -3,12 +3,13 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Users, ListTodo, Home } from "lucide-react"
+import { Users, ListTodo, Home, MessageCircle } from "lucide-react"
 
 const links = [
   { name: "Home", href: "/", icon: Home },
   { name: "Tasks", href: "/tasks", icon: ListTodo },
   { name: "Users", href: "/users", icon: Users },
+  { name: "Chat", href: "/chat", icon: MessageCircle },
 ]
 
 export function Nav() {
