@@ -39,6 +39,17 @@ export default function Home() {
             </CardContent>
           </Card>
         </Link>
+        <Link href="/chat-history">
+          <Card className="hover:bg-muted/50 transition-colors">
+            <CardHeader>
+              <CardTitle>Chat History</CardTitle>
+              <CardDescription>View past conversations</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Browse chat history</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
     </div>
   )

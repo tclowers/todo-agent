@@ -119,7 +119,13 @@ export function ChatInterface() {
               onClick={() => setCurrentChatId(chat.id)}
               className="shrink-0"
             >
-              Chat {new Date(chat.created_at).toLocaleDateString()}
+              Chat {new Date(chat.created_at).toLocaleString(undefined, {
+                month: 'numeric',
+                day: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric'
+              })}
             </Button>
           ))}
         </div>
