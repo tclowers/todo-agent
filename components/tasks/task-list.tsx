@@ -141,11 +141,11 @@ export function TaskList() {
 function getStatusVariant(status: string) {
   switch (status) {
     case "completed":
-      return "success"
+      return "default"
     case "in_progress":
-      return "warning"
-    default:
       return "secondary"
+    default:
+      return "outline"
   }
 }
 
