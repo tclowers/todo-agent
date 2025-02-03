@@ -1,3 +1,6 @@
+import { createCustomerInDb } from "./db/customers"
+import type { CustomerFormValues } from "@/lib/schemas/customer"
+
 export type BaseActionParams = {
   // Add customer params
   name?: string
@@ -25,10 +28,29 @@ export type BaseActionResult = {
 }
 
 export async function addCustomer(params: BaseActionParams): Promise<BaseActionResult> {
-  console.log('Adding customer with params:', params)
-  return {
-    success: true,
-    message: `Added customer ${params.name} with contact info: ${params.phone_number || params.email}`
+  try {
+    // Transform params into CustomerFormValues format
+    const customerData: CustomerFormValues = {
+      name: params.name || "New Customer",
+      address: params.address || "",
+      phone_number: params.phone_number || "",
+      email: params.email || "",
+      preferred_medium: params.preferred_medium || "email"
+    }
+
+    // Create customer in database
+    const customer = await createCustomerInDb(customerData)
+
+    return {
+      success: true,
+      message: `Added customer ${customer.name} with contact info: ${customer.phone_number || customer.email}`
+    }
+  } catch (error) {
+    console.error('Error adding customer:', error)
+    return {
+      success: false,
+      message: 'Failed to add customer to database'
+    }
   }
 }
 
