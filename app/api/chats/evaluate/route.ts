@@ -19,7 +19,7 @@ export async function POST() {
 
       // Format messages for OpenAI
       const formattedMessages = messages.map(msg => ({
-        role: "user",
+        role: (msg.user_id === process.env.RECEPTIONIST_AI_USER_ID ? "assistant" : "user") as "user" | "assistant",
         content: `${msg.user_id === process.env.RECEPTIONIST_AI_USER_ID ? "Assistant" : "User"}: ${msg.content}`
       }))
 

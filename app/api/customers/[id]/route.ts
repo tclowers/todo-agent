@@ -2,14 +2,22 @@ import { customerSchema } from "@/lib/schemas/customer"
 import { updateCustomerInDb, deleteCustomerFromDb } from "@/lib/services/db/customers"
 import { NextResponse } from "next/server"
 
+type RouteParams = {
+  params: Promise<{
+    id: string
+  }>
+}
+
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  props: RouteParams
 ) {
   try {
+    const params = await props.params
+    const id = params.id
     const json = await request.json()
     const body = customerSchema.parse(json)
-    const data = await updateCustomerInDb(params.id, body)
+    const data = await updateCustomerInDb(id, body)
     return NextResponse.json(data)
   } catch (error) {
     console.error("Error updating customer:", error)
@@ -22,10 +30,12 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  props: RouteParams
 ) {
   try {
-    await deleteCustomerFromDb(params.id)
+    const params = await props.params
+    const id = params.id
+    await deleteCustomerFromDb(id)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Error deleting customer:", error)
