@@ -1,11 +1,19 @@
 import { userSchema } from "@/lib/schemas/user"
 import { updateUserInDb, deleteUserFromDb } from "@/lib/services/db/users"
+import { type NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 
+type Props = {
+  params: Promise<{
+    id: string
+  }>
+}
+
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  props: Props
 ) {
+  const params = await props.params
   const id = params.id
   try {
     const json = await request.json()
@@ -22,9 +30,10 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  props: Props
 ) {
+  const params = await props.params
   const id = params.id
   try {
     await deleteUserFromDb(id)
@@ -36,4 +45,4 @@ export async function DELETE(
       { status: 500 }
     )
   }
-} 
+}

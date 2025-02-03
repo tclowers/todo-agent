@@ -1,11 +1,19 @@
 import { getCommentsForTask, createCommentInDb } from "@/lib/services/db/comments"
 import { SYSTEM_USER_ID } from "@/lib/constants"
+import { type NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 
+type Props = {
+  params: Promise<{
+    id: string
+  }>
+}
+
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  props: Props
 ) {
+  const params = await props.params
   const taskId = params.id
   try {
     const data = await getCommentsForTask(taskId)
@@ -17,9 +25,10 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  props: Props
 ) {
+  const params = await props.params
   const taskId = params.id
   try {
     const json = await request.json()

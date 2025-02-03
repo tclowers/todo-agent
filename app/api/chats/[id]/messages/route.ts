@@ -1,12 +1,20 @@
 import { createMessageInDb, getMessagesForChat } from "@/lib/services/db/messages"
 import { SYSTEM_USER_ID, RECEPTIONIST_AI_USER_ID } from "@/lib/constants"
+import { type NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import { getChatCompletion } from "@/lib/services/openai"
 
+type Props = {
+  params: Promise<{
+    id: string
+  }>
+}
+
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  props: Props
 ) {
+  const params = await props.params
   const chatId = params.id
   try {
     const data = await getMessagesForChat(chatId)
@@ -18,9 +26,10 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  props: Props
 ) {
+  const params = await props.params
   const chatId = params.id
   try {
     const json = await request.json()
@@ -44,9 +53,9 @@ export async function POST(
     // Get OpenAI response
     const aiResponse = await getChatCompletion(formattedMessages)
 
-    // Save AI response to database
+    // Save AI response to database with fallback message if null
     const assistantMessage = await createMessageInDb({
-      content: aiResponse,
+      content: aiResponse || "I apologize, but I'm unable to provide a response at the moment.",
       user_id: RECEPTIONIST_AI_USER_ID,
       chat_id: chatId,
     })

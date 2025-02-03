@@ -29,15 +29,6 @@ import { EditTaskDialog } from "@/components/tasks/edit-task-dialog"
 import { deleteTask } from "@/lib/services/tasks"
 import { useUsers } from "@/lib/context/users-context"
 
-interface TaskItem {
-  id: string
-  title: string
-  description: string | null
-  status: string
-  assigned_to: string | null
-  created_at: string
-}
-
 export function TaskList() {
   const { tasks, loading, refreshTasks } = useTasks()
   const { users } = useUsers()
