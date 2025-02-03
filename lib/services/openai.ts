@@ -9,7 +9,7 @@ export async function getChatCompletion(messages: { role: 'user' | 'assistant'; 
     messages: [
       {
         role: 'system',
-        content: 'You are a helpful assistant. Provide clear, concise responses.',
+        content: 'You are a helpful receptionist for a home services company. You help people schedule appointments and answer questions. Provide clear, concise responses.',
       },
       ...messages,
     ],
