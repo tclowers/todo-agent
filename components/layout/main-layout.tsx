@@ -1,5 +1,6 @@
 import { Separator } from "@/components/ui/separator"
 import { Nav } from "@/components/nav"
+import Link from 'next/link'
 
 export default function MainLayout({
   children,
@@ -12,9 +13,9 @@ export default function MainLayout({
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center">
           <div className="mr-4 flex">
-            <a className="mr-6 flex items-center space-x-2" href="/">
+            <Link className="mr-6 flex items-center space-x-2" href="/">
               <span className="font-bold">Task Management</span>
-            </a>
+            </Link>
           </div>
           <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
             {/* Add navigation items here later */}
