@@ -28,6 +28,7 @@ import { useTasks } from "@/lib/context/tasks-context"
 import { EditTaskDialog } from "@/components/tasks/edit-task-dialog"
 import { deleteTask } from "@/lib/services/tasks"
 import { useUsers } from "@/lib/context/users-context"
+import { ViewTaskDialog } from "@/components/tasks/view-task-dialog"
 
 export function TaskList() {
   const { tasks, loading, refreshTasks } = useTasks()
@@ -91,6 +92,7 @@ export function TaskList() {
                   {new Date(task.created_at).toLocaleString()}
                 </TableCell>
                 <TableCell className="text-right space-x-2">
+                  <ViewTaskDialog task={task} />
                   <EditTaskDialog task={task} />
                   <AlertDialog>
                     <AlertDialogTrigger asChild>

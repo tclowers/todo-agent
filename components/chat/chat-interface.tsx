@@ -11,8 +11,13 @@ import { getMessages, createMessage } from "@/lib/services/messages"
 import { getChats, createChat } from "@/lib/services/chats"
 import type { Message } from "@/lib/services/db/messages"
 import type { Chat } from "@/lib/services/db/chats"
+import { useRouter, useSearchParams } from "next/navigation"
 
-export function ChatInterface() {
+type ChatInterfaceProps = {
+  initialChatId?: string
+}
+
+export function ChatInterface({ initialChatId }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [chats, setChats] = useState<Chat[]>([])
   const [currentChatId, setCurrentChatId] = useState<string | null>(null)
@@ -20,12 +25,15 @@ export function ChatInterface() {
   const [loading, setLoading] = useState(false)
   const { users } = useUsers()
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const initialLoadRef = useRef(false)
 
   const loadChats = useCallback(async () => {
     try {
       const data = await getChats()
       setChats(data)
-      if (data.length > 0 && !currentChatId) {
+      if (!initialLoadRef.current && data.length > 0 && !currentChatId) {
         setCurrentChatId(data[0].id)
       }
     } catch (error) {
@@ -33,6 +41,13 @@ export function ChatInterface() {
       toast.error("Failed to load chats")
     }
   }, [currentChatId])
+
+  useEffect(() => {
+    if (!initialLoadRef.current && initialChatId) {
+      setCurrentChatId(initialChatId)
+      initialLoadRef.current = true
+    }
+  }, [initialChatId])
 
   useEffect(() => {
     loadChats()
@@ -108,6 +123,13 @@ export function ChatInterface() {
     }
   }
 
+  const handleChatChange = (chatId: string) => {
+    setCurrentChatId(chatId)
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete("id")
+    router.push(`/chat?${params.toString()}`)
+  }
+
   return (
     <div className="flex flex-col h-[800px] space-y-4">
       <div className="flex justify-between items-center">
@@ -116,7 +138,7 @@ export function ChatInterface() {
             <Button
               key={chat.id}
               variant={chat.id === currentChatId ? "default" : "outline"}
-              onClick={() => setCurrentChatId(chat.id)}
+              onClick={() => handleChatChange(chat.id)}
               className="shrink-0"
             >
               Chat {new Date(chat.created_at).toLocaleString(undefined, {

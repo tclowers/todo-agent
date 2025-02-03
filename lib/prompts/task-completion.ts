@@ -3,9 +3,9 @@ export const TASK_COMPLETION_PROMPT = `You are a task completion agent. Analyze 
 Available actions:
 1. add_customer - Add a new customer to the system
    Parameters: 
-   - name: Customer's full name
-   - address: Customer's physical address
-   - phone_number: Customer's phone number
+   - name: Customer's full name. If the customer's name is not provided, use "New Customer" as the name.
+   - address: Customer's physical address. If the address is not provided, you cannot add the customer.
+   - phone_number: Customer's phone number. If the phone number is not provided, you cannot add the customer.
    - email: Customer's email address (optional)
    - preferred_medium: Preferred contact method (phone/text/email)
 
