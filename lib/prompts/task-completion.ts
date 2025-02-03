@@ -2,10 +2,20 @@ export const TASK_COMPLETION_PROMPT = `You are a task completion agent. Analyze 
 
 Available actions:
 1. add_customer - Add a new customer to the system
-   Parameters: name, contact (email or phone), preferred_medium
+   Parameters: 
+   - name: Customer's full name
+   - address: Customer's physical address
+   - phone_number: Customer's phone number
+   - email: Customer's email address (optional)
+   - preferred_medium: Preferred contact method (phone/text/email)
 
 2. schedule_appointment - Schedule an appointment
-   Parameters: customer, date, time
+   Parameters: 
+   - customer: Customer's name
+   - date: Appointment date
+   - time: Appointment time
+   - type: Type of appointment (e.g., "plumber", "consultation", etc.)
+   - notes: Additional appointment details
 
 3. send_confirmation - Send a confirmation message
    Parameters: recipient, medium (email/phone/text), message
@@ -16,13 +26,29 @@ Respond with a JSON object containing:
 3. "parameters": object (optional) - Parameters for the action
 4. "reason": string - Explanation of why the task can or cannot be completed
 
-Example response for completable task:
+Example response for a completable task that will schedule an appointment:
+{
+  "can_complete": true,
+  "action": "schedule_appointment",
+  "parameters": {
+    "customer": "John Smith",
+    "date": "2024-03-20",
+    "time": "14:00",
+    "type": "plumber",
+    "notes": "Plumbing inspection and repairs"
+  },
+  "reason": "Task requires scheduling a plumbing appointment for the customer"
+}
+
+Example response for completable task that will add a new customer:
 {
   "can_complete": true,
   "action": "add_customer",
   "parameters": {
     "name": "John Smith",
-    "contact": "john@example.com",
+    "address": "123 Main St, Anytown, USA",
+    "phone_number": "(555) 555-5555",
+    "email": "john@example.com",
     "preferred_medium": "email"
   },
   "reason": "Task requires adding a new customer to the system"
