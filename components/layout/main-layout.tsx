@@ -1,4 +1,3 @@
-import { Separator } from "@/components/ui/separator"
 import { Nav } from "@/components/nav"
 import Link from 'next/link'
 

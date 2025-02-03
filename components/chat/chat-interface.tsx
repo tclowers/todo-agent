@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useUsers } from "@/lib/context/users-context"
-import { useEffect, useState, KeyboardEvent, useRef } from "react"
+import { useEffect, useState, KeyboardEvent, useRef, useCallback } from "react"
 import { toast } from "sonner"
 import { getMessages, createMessage } from "@/lib/services/messages"
 import { getChats, createChat } from "@/lib/services/chats"
@@ -21,9 +21,22 @@ export function ChatInterface() {
   const { users } = useUsers()
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  const loadChats = useCallback(async () => {
+    try {
+      const data = await getChats()
+      setChats(data)
+      if (data.length > 0 && !currentChatId) {
+        setCurrentChatId(data[0].id)
+      }
+    } catch (error) {
+      console.error("Error loading chats:", error)
+      toast.error("Failed to load chats")
+    }
+  }, [currentChatId])
+
   useEffect(() => {
     loadChats()
-  }, [])
+  }, [loadChats])
 
   useEffect(() => {
     if (currentChatId) {
@@ -37,19 +50,6 @@ export function ChatInterface() {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
-
-  async function loadChats() {
-    try {
-      const data = await getChats()
-      setChats(data)
-      if (data.length > 0 && !currentChatId) {
-        setCurrentChatId(data[0].id)
-      }
-    } catch (error) {
-      console.error("Error loading chats:", error)
-      toast.error("Failed to load chats")
-    }
   }
 
   async function loadMessages(chatId: string) {
@@ -103,7 +103,7 @@ export function ChatInterface() {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       if (!loading && newMessage.trim() && currentChatId) {
-        await handleSubmit(e as any)
+        await handleSubmit(e)
       }
     }
   }

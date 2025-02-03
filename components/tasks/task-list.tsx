@@ -29,7 +29,7 @@ import { EditTaskDialog } from "@/components/tasks/edit-task-dialog"
 import { deleteTask } from "@/lib/services/tasks"
 import { useUsers } from "@/lib/context/users-context"
 
-type Task = {
+interface TaskItem {
   id: string
   title: string
   description: string | null
