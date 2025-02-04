@@ -132,7 +132,8 @@ export function ChatInterface({ initialChatId }: ChatInterfaceProps) {
 
   return (
     <div className="flex flex-col h-[800px] space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col space-y-4">
+        <Button onClick={handleNewChat} className="w-fit">New Chat</Button>
         <div className="flex gap-2 overflow-x-auto pb-2">
           {chats.map((chat) => (
             <Button
@@ -151,7 +152,6 @@ export function ChatInterface({ initialChatId }: ChatInterfaceProps) {
             </Button>
           ))}
         </div>
-        <Button onClick={handleNewChat} className="shrink-0">New Chat</Button>
       </div>
 
       <ScrollArea className="flex-1 p-4 rounded-lg border min-h-[600px]">
