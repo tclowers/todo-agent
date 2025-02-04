@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Receptionist Task Management System
+
+An intelligent task management system powered by GPT-4, designed to act as an automated receptionist for scheduling appointments and managing customer interactions for a home services company.
+
+## Overview
+
+This project implements an AI-powered receptionist that can:
+- Chat with customers to schedule appointments
+- Collect customer information
+- Generate and manage tasks automatically
+- Handle appointment scheduling and confirmations
+- Process tasks using agentic actions
+
+## Key Features
+
+- Real-time chat interface with AI receptionist
+- Automated task extraction from conversations
+- Task completion system with human fallback
+- Customer management
+- Appointment scheduling
+- Multi-user support with different roles (AI agents, human employees)
+
+## Technical Stack
+
+- Next.js 15
+- TypeScript
+- OpenAI GPT-4
+- Supabase for database and auth
+- Tailwind CSS with shadcn/ui components
+- Vercel for deployment
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository
+2. Install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Set up environment variables:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+OPENAI_API_KEY=your_key_here
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Run the development server:
+```bash
+npm run dev
+```
 
-## Learn More
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-To learn more about Next.js, take a look at the following resources:
+## Automated Tasks
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This project has two POST endpoints that should be run once an hour, 5 minutes apart, to perform agentic actions. Add the following to your vercel.json:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```json
+{
+  "crons": {
+    "evaluate_chats": {
+      "path": "/api/chats/evaluate",
+      "schedule": "0 * * * *"
+    },
+    "complete_tasks": {
+      "path": "/api/tasks/complete",
+      "schedule": "5 * * * *"
+    }
+  }
+}
+```
 
-## Deploy on Vercel
+## System Architecture
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The system operates in three main phases:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Chat Phase**: 
+   - AI receptionist interacts with customers
+   - Collects necessary information
+   - Uses context-aware responses
+
+2. **Evaluation Phase**: 
+   - Analyzes completed conversations
+   - Extracts actionable tasks
+   - Determines conversation completeness
+
+3. **Task Completion Phase**:
+   - Attempts to complete tasks automatically
+   - Falls back to human operators when needed
+   - Manages customer records and appointments
+
+## AI Components
+
+The system uses several specialized AI prompts:
+- Receptionist prompt for customer interaction
+- Task extraction for identifying required actions
+- Task completion analysis for automated processing
+- Chat evaluation for determining conversation completeness
+
+## License
+
+MIT License
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

@@ -9,14 +9,4 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "outputDirectory": ".next"
-//   "crons": {
-//     "evaluate_chats": {
-//       "path": "/api/chats/evaluate",
-//       "schedule": "0 * * * *"
-//     },
-//     "complete_tasks": {
-//       "path": "/api/tasks/complete",
-//       "schedule": "5 * * * *"
-//     }
-//   }
 } 
